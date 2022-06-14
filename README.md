@@ -50,3 +50,12 @@ Run docker image
 '''
 docker run -p 5000:5000 -e PORT=5000 40bbc85e8ee5
 '''
+
+To check running container in docker 
+'''
+docker ps
+'''
+
+To stop docker container
+'''
+docker stop <container_id>
