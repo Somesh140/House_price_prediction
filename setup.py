@@ -10,7 +10,7 @@ REQUIREMENTS_FILE_NAME="requirements.txt"
 
 def get_requirements_list()->List[str]:
     """Description: This function is going to return list of requirement
-        mentioned in requirement.txt file
+        mentioned in requirements.txt file
         
         return This function is going to return a list which contains name of libraries
         mentioned in requirements.txt file
