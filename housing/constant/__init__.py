@@ -10,8 +10,6 @@ CONFIG_FILE_PATH = os.path.join(ROOT_DIR,CONFIG_DIR,CONFIG_FILE_NAME)
 CURRENT_TIME_STAMP = f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
 
 
-
-
 # Training pipeline related variable
 TRAINING_PIPELINE_CONFIG_KEY = "training_pipeline_config"
 TRAINING_PIPELINE_ARTIFACT_DIR_KEY = "artifact_dir"
@@ -30,3 +28,8 @@ DATA_INGESTION_TEST_DIR_KEY="ingested_test_dir"
 #Data Validation related variables
 DATA_VALIDATION_CONFIG_KEY = "data_validation_config"
 DATA_VALIDATION_SCHEMA_FILE_NAME_KEY = "schema_file_name"
+DATA_VALIDATION_SCHEMA_DIR_KEY= "schema_dir"
+DATA_VALIDATION_ARTIFACT_DIR_NAME = "data_validation"
+DATA_VALIDATION_REPORT_FILE_NAME_KEY= "report_file_path"
+DATA_VALIDATION_REPORT_PAGE_FILE_NAME_KEY = "report_page_file_name"
+
