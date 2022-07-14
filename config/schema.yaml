@@ -21,7 +21,6 @@ numerical_columns:
   - median_income
 
 
-
 categorical_columns:
   - ocean_proximity
 

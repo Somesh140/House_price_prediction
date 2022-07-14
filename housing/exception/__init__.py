@@ -26,7 +26,7 @@ class HousingException(Exception):
         Error occured in script: [ {file_name} ] at
         try_block_line_number:[{try_block_line_number}] 
         and exception_block_line number:[{exception_block_line_number}] 
-        error messgae:[{error_message}]"""
+        error message:[{error_message}]"""
 
         return error_message
 

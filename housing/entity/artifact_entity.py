@@ -1,6 +1,5 @@
 from collections import namedtuple
 
-from housing.component.data_transformation import DataTransformation
 
 
 DataIngestionArtifact= namedtuple("DataIngestionArtifact",
