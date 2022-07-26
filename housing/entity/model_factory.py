@@ -209,7 +209,7 @@ class ModelFactory:
     def execute_grid_search_operation(self, initialized_model: InitializedModelDetail, input_feature,
                                       output_feature) -> GridSearchedBestModel:
         """
-        excute_grid_search_operation(): function will perform paramter search operation and
+        execute_grid_search_operation(): function will perform paramter search operation and
         it will return you the best optimistic  model with best paramter:
         estimator: Model object
         param_grid: dictionary of paramter to perform search operation

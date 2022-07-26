@@ -6,4 +6,5 @@ numpy
 PyYAML
 evidently
 dill
+matplotlib
 -e .

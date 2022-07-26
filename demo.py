@@ -3,11 +3,16 @@ from housing.pipeline.pipeline import Pipeline
 from housing.exception import HousingException
 from housing.logger import logging
 from housing.component.data_transformation import DataTransformation
+import os,sys
 
 def main():
     try:
-        pipeline = Pipeline()
-        pipeline.run_pipeline()
+        config_path=os.path.join("config","config.yaml")
+        pipeline = Pipeline(Configuartion(config_file_path=config_path))
+        pipeline.start()
+        logging.info("main function execution completed")
+        #pipeline = Pipeline()
+        #pipeline.run_pipeline()
         #data_transformation_config = Configuartion().get_data_transformation_config()
         #print(data_transformation_config)
         #schema_file_path = r"D:\Datascience_Projects\ML_project_1\config\schema.yaml"

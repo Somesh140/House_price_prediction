@@ -1,5 +1,5 @@
 
-from housing.config.configuration import Configuration
+from housing.config.configuration import Configuartion
 from housing.entity.model_factory import MetricInfoArtifact, evaluate_regression_model
 from housing.exception import HousingException
 from housing.logger import logging
