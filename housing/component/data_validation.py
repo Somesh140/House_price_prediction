@@ -65,6 +65,7 @@ class DataValidation:
         try:
             validation_status=False
             #Assigment validate training and testing dataset using schema file
+            train_df,test_df=self.get_train_and_test_df() 
             #1. Number of Column
             #2. Check the value of ocean proximity 
             # acceptable values     <1H OCEAN

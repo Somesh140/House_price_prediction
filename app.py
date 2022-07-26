@@ -1,13 +1,6 @@
-from importlib.resources import path
+
 import json
-
-
-
-from flask import Flask,render_template,request
-from flask.helpers import send_file
-
-
-from requests import request
+from flask import Flask,render_template,request,abort, send_file
 from housing.config.configuration import Configuartion
 from housing.pipeline.pipeline import Pipeline
 from housing.entity.housing_predictor import HousingData, HousingPredictor
@@ -33,7 +26,7 @@ app=Flask(__name__)
 @app.route("/",methods=['GET','POST'])
 def index():
     try:
-       return render_template('index_html')
+       return render_template('index.html')
     except Exception as e:
         return str(e)
 
@@ -47,7 +40,7 @@ def render_artifact_dir(req_path):
     print(abs_path)
     #Return 404 if path doesn't exist
     if not os.path.exists(abs_path):
-        return os.abort(404)
+        return abort(404)
     
     #check if path is a file and save
     if os.path.isfile(abs_path):
@@ -63,7 +56,7 @@ def render_artifact_dir(req_path):
     files = {os.path.join(abs_path,file_name): file_name for file_name in os.listdir(abs_path) if 
             "artifact" in os.path.join(abs_path,file_name)}
 
-    result ={
+    result = {
         "files":files,
         "parent_folder":os.path.dirname(abs_path),
         "parent_label": abs_path
@@ -72,11 +65,15 @@ def render_artifact_dir(req_path):
 
 @app.route('/view_experiment_history',methods=['GET','POST'])
 def view_experiment_history():
-    experiment_df=Pipeline.get_experiments_status()
-    context={
-        "experiment":experiment_df.to_html(classes='table table-striped col-12')
-    }
-    return render_template('experiment_history.html',context=context)
+    try:
+        experiment_df=Pipeline.get_experiments_status()
+        context={
+            "experiment":experiment_df.to_html(classes='table table-striped col-12')
+                }
+        return render_template('experiment_history.html',context=context)
+    except Exception as e:
+        logging.exception(e)
+        raise str(e)
 
 
 
@@ -150,13 +147,13 @@ def update_model_config():
             write_yaml_file(file_path=MODEL_CONFIG_FILE_PATH,data=model_config)
 
         model_config = read_yaml_file(file_path=MODEL_CONFIG_FILE_PATH)
-        return render_template('update_model.html',result={"model_config",model_config}) 
+        return render_template('update_model.html',result={"model_config":model_config}) 
     except Exception as e:
         logging.exception(e)
         return str(e)
 
 @app.route('/saved_models',defaults={'req_path':'saved_models'})
-@app.route('/saved_models/<path:req_path')
+@app.route('/saved_models/<path:req_path>')
 def saved_models_dir(req_path):
     try:
         os.makedirs("saved_models",exist_ok=True)
@@ -166,7 +163,7 @@ def saved_models_dir(req_path):
         print(abs_path)
         #Return 404 if path doesn't exist
         if not os.path.exists(abs_path):
-            return os.abort(404)
+            return abort(404)
         #check if path is a file and save
         if os.path.isfile(abs_path):
             return send_file(abs_path)
@@ -188,33 +185,33 @@ def saved_models_dir(req_path):
 
 
 
-@app.route(f"/logs", defaults={'req_path': f'{LOG_FOLDER_NAME}'})
+@app.route(f'/logs', defaults={'req_path': f'{LOG_FOLDER_NAME}'})
 @app.route(f'/{LOG_FOLDER_NAME}/<path:req_path>')
 def render_log_dir(req_path):
     os.makedirs(LOG_FOLDER_NAME, exist_ok=True)
-    #joining the base and the requested path
-    logging.info(f"req_path:{req_path}")
+    # Joining the base and the requested path
+    logging.info(f"req_path: {req_path}")
     abs_path = os.path.join(req_path)
     print(abs_path)
-    #Return 404 if path doesn't exist
-    if not os.path.isfile(abs_path):
-        return os.abort(404)
+    # Return 404 if path doesn't exist
+    if not os.path.exists(abs_path):
+        return abort(404)
 
-    # Check if path is a file and save
+    # Check if path is a file and serve
     if os.path.isfile(abs_path):
         log_df = get_log_dataframe(abs_path)
         context = {"log": log_df.to_html(classes="table-striped", index=False)}
-        return render_template('log.html',context=context)
-    
-    #Show directory contents
-    files = {os.path.join(abs_path,file):file for file in os.listdir(abs_path)}
+        return render_template('log.html', context=context)
+
+    # Show directory contents
+    files = {os.path.join(abs_path, file): file for file in os.listdir(abs_path)}
 
     result = {
         "files": files,
         "parent_folder": os.path.dirname(abs_path),
-        "parent_label": abs_path}
-
-    return render_template('log_files.html',result=result)
+        "parent_label": abs_path
+    }
+    return render_template('log_files.html', result=result)
 
 if __name__=="__main__":
     app.run(debug=True)

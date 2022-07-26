@@ -219,7 +219,7 @@ class Pipeline(Thread):
         except Exception as e:
             raise HousingException(e,sys) from e
     
-    @staticmethod
+    @classmethod
     def get_experiments_status(cls,limit:int=5)-> pd.DataFrame:
         try:
             if os.path.exists(Pipeline.experiment_file_path):

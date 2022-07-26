@@ -4,7 +4,6 @@ grid_search:
   params:
     cv: 5
     verbose: 2
-
 model_selection:
   module_0:
     class: LinearRegression
@@ -15,7 +14,6 @@ model_selection:
       fit_intercept:
       - true
       - false
-  
   module_1:
     class: RandomForestRegressor
     module: sklearn.ensemble
