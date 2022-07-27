@@ -1,4 +1,5 @@
 
+
 from housing.exception import HousingException
 from housing.logger import logging
 from housing.entity.config_entity import DataValidationConfig
@@ -10,7 +11,9 @@ from evidently.model_profile import Profile
 from evidently.model_profile.sections import DataDriftProfileSection
 from evidently.dashboard.tabs import DataDriftTab
 from evidently.dashboard import Dashboard
-
+from housing.util.util import read_yaml_file
+from housing.constant import DATASET_SCHEMA_COLUMNS_KEY, DOMAIN_VALUE_KEY,OCEAN_PROXIMITY_KEY
+from collections import Counter
 
 class DataValidation:
 
@@ -50,7 +53,7 @@ class DataValidation:
             logging.info(f"Is train and test file exists?->{is_available}")
             
             if not is_available:
-                training_file = self.data_ingestion_artifact.train_file_pat
+                training_file = self.data_ingestion_artifact.train_file_path
                 testing_file = self.data_ingestion_artifact.test_file_path
                 message = f"Training file:{training_file} or Testing file: {testing_file}" \
                             "is not present"
@@ -64,17 +67,87 @@ class DataValidation:
     def validate_dataset_schema(self)->bool:
         try:
             validation_status=False
-            #Assigment validate training and testing dataset using schema file
+            # validate training and testing dataset using schema file
             train_df,test_df=self.get_train_and_test_df() 
-            #1. Number of Column
+            #1. checking number of columns in training dataset 
+            chk1 = self.check_length_column(train_df)              
+            logging.info(f"Number of columns in training dataset match with the schema:{chk1}")
+           
+            chk2 = self.check_length_column(test_df)
+            logging.info(f"Number of columns in testing dataset match with the schema:{chk2}")
+           
+                       
+           
             #2. Check the value of ocean proximity 
             # acceptable values     <1H OCEAN
             # INLAND
             # ISLAND
             # NEAR BAY
             # NEAR OCEAN
-            #3. Check column names
-            validation_status = True
+            #training dataset
+            chk3= self.check_ocean_proximity_values(train_df)
+            logging.info(f"Ocean proximity values in training dataset match with the schema:{chk3}")
+
+            chk4= self.check_ocean_proximity_values(train_df)
+            logging.info(f"Ocean proximity values in testing dataset match with the schema:{chk4}")
+
+            #3. Check column names in training dataset
+            chk5= self.check_column_names(train_df)
+            logging.info(f"all columns in training dataset are correct: {chk5}")
+
+            chk6= self.check_column_names(test_df)
+            
+            logging.info(f"all columns in testing dataset are correct: {chk6}")
+            
+
+            if (chk1 and chk2 and chk3 and chk4 and chk5 and chk6) is False:
+                validation_status =False
+                raise Exception(f"data is not valid")
+
+            else:
+                validation_status =True
+              
+            return validation_status
+        except Exception as e:
+            raise HousingException(e,sys) from e
+    
+    def check_ocean_proximity_values(self,df:pd.DataFrame)->bool:
+        try:
+            schema = read_yaml_file(self.data_validation_config.schema_file_path)
+            ocean_proximity_values_df = list(Counter(df[OCEAN_PROXIMITY_KEY]).keys())
+            logging.info(f"values of ocean df :[{ocean_proximity_values_df}]")
+            ocean_proximity_values_schema = schema[DOMAIN_VALUE_KEY][OCEAN_PROXIMITY_KEY]
+            logging.info(f"values of ocean schema :[{ocean_proximity_values_schema}]")
+            validation_status = all(val in ocean_proximity_values_df for val in ocean_proximity_values_schema)
+            
+            return validation_status
+        except Exception as e:
+            raise HousingException(e,sys) from e
+
+
+    def check_length_column(self,df:pd.DataFrame)->bool:
+        try:
+            schema = read_yaml_file(self.data_validation_config.schema_file_path)
+            if len(df.columns)==len(schema[DATASET_SCHEMA_COLUMNS_KEY].keys()):
+                validation_status = True
+            else:
+                validation_status=False
+            return validation_status
+        except Exception as e:
+            raise HousingException(e,sys) from e
+
+    def check_column_names(self,df:pd.DataFrame)->bool:
+        try:
+            schema = read_yaml_file(self.data_validation_config.schema_file_path)
+            columns_names = list(df.columns)
+            
+            for col in columns_names:
+                if col not in list(schema[DATASET_SCHEMA_COLUMNS_KEY].keys()):
+                    logging.info(f"{col} not in the dataset")
+                    validation_status=False
+                    break
+                else:
+                    validation_status = True         
             return validation_status
         except Exception as e:
             raise HousingException(e,sys) from e

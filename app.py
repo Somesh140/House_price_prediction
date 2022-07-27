@@ -63,18 +63,13 @@ def render_artifact_dir(req_path):
     }
     return render_template('files.html',result=result)
 
-@app.route('/view_experiment_history',methods=['GET','POST'])
+@app.route('/view_experiment_hist', methods=['GET', 'POST'])
 def view_experiment_history():
-    try:
-        experiment_df=Pipeline.get_experiments_status()
-        context={
-            "experiment":experiment_df.to_html(classes='table table-striped col-12')
-                }
-        return render_template('experiment_history.html',context=context)
-    except Exception as e:
-        logging.exception(e)
-        raise str(e)
-
+    experiment_df = Pipeline.get_experiments_status()
+    context = {
+        "experiment": experiment_df.to_html(classes='table table-striped col-12')
+    }
+    return render_template('experiment_history.html', context=context)
 
 
 @app.route('/train',methods=['GET','POST'])

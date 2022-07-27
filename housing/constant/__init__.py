@@ -58,6 +58,9 @@ CATEGORICAL_COLUMN_KEY = "categorical_columns"
 
 TARGET_COLUMN_KEY="target_column"
 
+DOMAIN_VALUE_KEY="domain_value"
+OCEAN_PROXIMITY_KEY="ocean_proximity"
+
 # Model Training related variables
 
 MODEL_TRAINER_ARTIFACT_DIR = "model_trainer"
