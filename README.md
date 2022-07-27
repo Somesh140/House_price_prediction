@@ -1,5 +1,6 @@
 # ML_project_1
-## Start Machine Learning project.
+## Application deployed on heroku
+## Calfornia House Price Prediction Project.
 
 ### Software and account Requirement.
 
